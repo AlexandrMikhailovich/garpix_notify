@@ -8,7 +8,6 @@ from garpix_notify.models.choices import STATE, TYPE
 from garpix_notify.models.config import NotifyConfig
 from garpix_notify.models.notify import Notify
 
-
 celery_app = import_string(settings.GARPIX_NOTIFY_CELERY_SETTINGS)
 
 try:
@@ -65,3 +64,13 @@ celery_app.conf.beat_schedule.update({
     }
 })
 celery_app.conf.timezone = 'UTC'
+
+
+@celery_app.task
+def send_notifications_users(user_list):
+    for user_pk in user_list:
+        user = get_user_model().objects.filter(pk=user_pk).first()
+        if user and user.email:
+            Notify.send(settings.NOTIFY_MAILING_LIST, {
+                'message': '',
+            }, email=user.email)

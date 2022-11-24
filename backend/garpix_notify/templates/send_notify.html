@@ -6,8 +6,7 @@
             {% csrf_token %}
                 <input type="submit" value="Test Notify" name="_send_now">
                 <input type="submit" value="Test SystemNotify" name="_send_now_system">
+                <input type="number" min="1" max="9999" value="35" step="1" style="width: 48px; height: 16px;" name="_count_mail_hour">
+                <input type="submit" value="Newsletter" name="_newsletter">
     </div>
 {% endblock %}
-
-
-

@@ -1,8 +1,10 @@
 from django.contrib import admin, messages
+from django.http import HttpResponseRedirect
+from datetime import datetime, timedelta, timezone
 
 from ..models import SystemNotify, Notify
 from ..models.template import NotifyTemplate
-from django.http import HttpResponseRedirect
+from ..tasks import send_notifications_users
 
 
 @admin.register(NotifyTemplate)
@@ -71,7 +73,24 @@ class NotifyTemplateAdmin(admin.ModelAdmin):
             instance.send_notification()
             self.message_user(request, 'Тестовое уведомление отправлено', level=messages.SUCCESS)
             return HttpResponseRedirect(".")
+        if obj.user_lists and "_newsletter" in request.POST:
+            print(obj.user_lists.all())
+            user_list = []
+            for elem in obj.user_lists.all():
+                user_list.extend(elem.users.all())
+            user_list = list(set(user_list))
+            list_notify = []
+            time = datetime.now(timezone.utc)
+            count_mail_hour = int(request.POST["_count_mail_hour"])
+            for number in range(len(user_list)):
+                list_notify.append(user_list[number].pk)
+                if (number + 1) % count_mail_hour == 0 or number == len(user_list) - 1:
+                    send_notifications_users.apply_async(kwargs={"user_list": list_notify}, eta=time)
+                    time += timedelta(hours=1)
+                    list_notify = []
 
+            self.message_user(request, 'Рассылка началась', level=messages.SUCCESS)
+            return HttpResponseRedirect(".")
         return super().response_change(request, obj)
 
     def get_changelist(self, request, **kwargs):
