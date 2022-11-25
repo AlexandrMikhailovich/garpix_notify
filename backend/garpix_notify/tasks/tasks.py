@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.utils import timezone
 from django.utils.module_loading import import_string
+from django.contrib.auth import get_user_model
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 

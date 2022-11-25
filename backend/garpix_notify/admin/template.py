@@ -74,7 +74,6 @@ class NotifyTemplateAdmin(admin.ModelAdmin):
             self.message_user(request, 'Тестовое уведомление отправлено', level=messages.SUCCESS)
             return HttpResponseRedirect(".")
         if obj.user_lists and "_newsletter" in request.POST:
-            print(obj.user_lists.all())
             user_list = []
             for elem in obj.user_lists.all():
                 user_list.extend(elem.users.all())
