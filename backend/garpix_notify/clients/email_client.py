@@ -90,10 +90,10 @@ class EmailClient:
         if self.notify.sender_email is None:
             self.notify.sender_email = account.sender
 
-        users_list = self.notify.users_list.all().order_by('-mail_to_all')
+        # users_list = self.notify.users_list.all().order_by('-mail_to_all')
 
-        if users_list.exists():
-            self.emails: list = ReceivingUsers.run_receiving_users(users_list, 'email')
+        # if users_list.exists():
+        #     self.emails: ldeleist = ReceivingUsers.run_receiving_users(users_list, 'email')
 
         if self.notify.email:
             self.emails.append(self.notify.email)
