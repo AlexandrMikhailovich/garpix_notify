@@ -163,6 +163,7 @@ FEEDBACK_EVENT = 3
 EXAMPLE_EVENT_1 = 4
 EXAMPLE_EVENT_2 = 5
 TEST_EVENT_2 = 6
+MAILING_LIST = 7
 
 NOTIFY_EVENTS = {
     REGISTRATION_EVENT: {
@@ -183,6 +184,11 @@ NOTIFY_EVENTS = {
     },
     TEST_EVENT_2: {
         'title': 'TestEvent',
+    },
+    MAILING_LIST: {
+        'title': 'Mailing list',
+        'context_description': '{{ message }}',
+        'event_description': 'Mailing list'
     },
 }
 
@@ -264,3 +270,4 @@ TEST_COVERAGE_RATE = 50
 SENTRY_CHECK_METHOD = 'warning'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEAR = 'Dear'

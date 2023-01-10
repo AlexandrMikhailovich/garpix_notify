@@ -344,6 +344,9 @@ Notify.send(settings.MY_NOTIFY, {
 
 For notifications of the SYSTEM type, a separate non-periodic task is used that works instantly, if room_name is missing system messages will be sent in `'room_{id}'` where `'id'` is user id
 
+For mailing, create a template with the "Mailing list" event and click on the "Newsletter" button. In the field on the left, you can determine the number of messages that will be sent per hour.
+To change the address to the user, change the "DEAR" parameter in "settings".
+
 # Changelog
 
 See [CHANGELOG.md](backend/garpix_notify/CHANGELOG.md).

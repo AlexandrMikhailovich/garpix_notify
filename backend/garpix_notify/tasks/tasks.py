@@ -68,10 +68,10 @@ celery_app.conf.timezone = 'UTC'
 
 
 @celery_app.task
-def send_notifications_users(user_list):
+def send_notifications_users_mailing_list(user_list):
     for user_pk in user_list:
         user = get_user_model().objects.filter(pk=user_pk).first()
         if user and user.email:
-            Notify.send(settings.NOTIFY_MAILING_LIST, {
-                'message': '',
+            Notify.send(settings.MAILING_LIST, {
+                'message': f'{settings.DEAR} {user.username}',
             }, email=user.email)

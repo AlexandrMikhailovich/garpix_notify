@@ -1,3 +1,6 @@
+### (10.01.2023)
+- Added the ability to send messages from the admin panel.
+
 ### 5.13.5 (21.11.2022)
 - For the operator `web.szk-info.ru` fixed answers.
 

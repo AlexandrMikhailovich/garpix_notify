@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 from ..models import SystemNotify, Notify
 from ..models.template import NotifyTemplate
-from ..tasks import send_notifications_users
+from ..tasks import send_notifications_users_mailing_list
 
 
 @admin.register(NotifyTemplate)
@@ -45,6 +45,21 @@ class NotifyTemplateAdmin(admin.ModelAdmin):
 
     create_mailing.short_description = "Сделать рассылку"
 
+    def create_mailing_list(self, request, obj):
+        user_list = []
+        for elem in obj.user_lists.all():
+            user_list.extend(elem.users.all())
+        user_list = list(set(user_list))
+        list_notify = []
+        time = datetime.now(timezone.utc)
+        count_mail_hour = int(request.POST["_count_mail_hour"])
+        for number in range(len(user_list)):
+            list_notify.append(user_list[number].pk)
+            if (number + 1) % count_mail_hour == 0 or number == len(user_list) - 1:
+                send_notifications_users_mailing_list.apply_async(kwargs={"user_list": list_notify}, eta=time)
+                time += timedelta(hours=1)
+                list_notify = []
+
     def response_change(self, request, obj):
         context = obj.get_test_data()
         template = obj
@@ -73,21 +88,9 @@ class NotifyTemplateAdmin(admin.ModelAdmin):
             instance.send_notification()
             self.message_user(request, 'Тестовое уведомление отправлено', level=messages.SUCCESS)
             return HttpResponseRedirect(".")
-        if obj.user_lists and "_newsletter" in request.POST:
-            user_list = []
-            for elem in obj.user_lists.all():
-                user_list.extend(elem.users.all())
-            user_list = list(set(user_list))
-            list_notify = []
-            time = datetime.now(timezone.utc)
-            count_mail_hour = int(request.POST["_count_mail_hour"])
-            for number in range(len(user_list)):
-                list_notify.append(user_list[number].pk)
-                if (number + 1) % count_mail_hour == 0 or number == len(user_list) - 1:
-                    send_notifications_users.apply_async(kwargs={"user_list": list_notify}, eta=time)
-                    time += timedelta(hours=1)
-                    list_notify = []
 
+        if obj.user_lists and "_newsletter" in request.POST:
+            self.create_mailing_list(request, obj)
             self.message_user(request, 'Рассылка началась', level=messages.SUCCESS)
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
